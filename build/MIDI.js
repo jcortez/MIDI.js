@@ -750,7 +750,9 @@ var startAudio = function(currentTime, fromCache, onsuccess) {
 	///
 	for (var n = 0; n < length && messages < 100; n++) {
 		var obj = data[n];
-		if ((queuedTime += obj[1]) <= currentTime) {
+		// Temporary fix mentioned in issue #165
+		//if ((queuedTime += obj[1]) <= currentTime) {
+		if ((queuedTime += obj[1]) < currentTime || currentTime >= midi.endTime) {
 			offset = queuedTime;
 			continue;
 		}
@@ -839,6 +841,7 @@ var stopAudio = function() {
 };
 
 })();
+
 /*
 	----------------------------------------------------------------------
 	AudioTag <audio> - OGG or MPEG Soundbank
@@ -1395,14 +1398,14 @@ var stopAudio = function() {
 			plugin = access;
 			var pluginOutputs = plugin.outputs;
 			if (typeof pluginOutputs == 'function') { // Chrome pre-43
-			  output = pluginOutputs()[0];
+				output = pluginOutputs()[0];
 			} else { // Chrome post-43
-        output = pluginOutputs[0];
+				output = pluginOutputs[0];
 			}
 			if (output === undefined) { // nothing there...
-			  errFunction();
+				errFunction();
 			} else {
-			  opts.onsuccess && opts.onsuccess();			
+				opts.onsuccess && opts.onsuccess();			
 			}
 		}, errFunction);
 	};
